@@ -1,6 +1,7 @@
 import time
 
 import aiohttp
+import requests
 import jwt
 import os
 from settings import *
@@ -103,9 +104,11 @@ class JWTManager:
         return response
 
 
-async def get_req(url: str, jwt_manager: JWTManager, data=None) -> aiohttp.ClientResponse:
-    return await jwt_manager.make_request(url, "GET", data)
+def get_req(url: str, *args, **kwargs) -> requests.Response:
+    return requests.get(url)
+    # return await jwt_manager.make_request(url, "GET", data)
 
 
-async def post_req(url: str, jwt_manager: JWTManager, obj: dict) -> aiohttp.ClientResponse:
-    return await jwt_manager.make_request(url, "POST", obj)
+def post_req(url: str, obj: dict) -> requests.Response:
+    return requests.post(url, json=obj)
+    # return await jwt_manager.make_request(url, "POST", obj)

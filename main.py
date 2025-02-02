@@ -1,13 +1,12 @@
 import cv2
 from pyzbar.pyzbar import decode
 import time
-import asyncio
 import functions
 import settings
 import pygame
 
 
-async def run_qrcode_reader(jwt_manager: functions.JWTManager):
+def run_qrcode_reader():
     cam = cv2.VideoCapture(0)
     cam.set(5, 640)
     cam.set(6, 480)
@@ -25,7 +24,7 @@ async def run_qrcode_reader(jwt_manager: functions.JWTManager):
         for i in decode(frame):
             qrcode_ID = i.data.decode("utf-8")
             try:
-                check_qrcode = await functions.get_req(functions.CHECK_QRCODE_URL + qrcode_ID, jwt_manager)
+                check_qrcode = functions.get_req(functions.CHECK_QRCODE_URL + qrcode_ID)
             except Exception as e:
                 print(e)
                 print("Internet bilan muammo")
@@ -34,9 +33,10 @@ async def run_qrcode_reader(jwt_manager: functions.JWTManager):
                 continue
 
             try:
-                qrcode_json_data: dict = await check_qrcode.json()
+                qrcode_json_data: dict = check_qrcode.json()
                 is_qrcode = True
             except Exception as e:
+                print(e)
                 print("BUNDAY QRCODE YO'Q")
                 alert_sound.play()
                 is_qrcode = False
@@ -44,18 +44,18 @@ async def run_qrcode_reader(jwt_manager: functions.JWTManager):
             if is_qrcode:
                 if qrcode_json_data["status"] == "true":
                     try:
-                        res = await functions.get_req(
+                        res = functions.get_req(
                             settings.LOGIN_LIBRARY
                             + qrcode_json_data["qrcode"]["ID"],
-                            jwt_manager,
                         )
-                    except:
+                    except Exception as e:
+                        print(e)
                         print("Internet bilan muammo")
                         alert_sound.play()
                         time.sleep(2)
                         continue
-                    json_data = await res.json()
-                    if res.status == 200 and json_data["status"] == "true":
+                    json_data = res.json()
+                    if res.status_code == 200 and json_data["status"] == "true":
                         print("Kirish mumkin: ", i.data.decode("utf-8"))
                         welcome_sound.play()
 
@@ -69,11 +69,12 @@ async def run_qrcode_reader(jwt_manager: functions.JWTManager):
         cv2.waitKey(3)
 
 
-async def main():
-    jwt_manager = functions.JWTManager()
-    await jwt_manager.obtain_tokens()
-    await run_qrcode_reader(jwt_manager)
+def main():
+    # jwt_manager = functions.JWTManager()
+    # await jwt_manager.obtain_tokens()
+    print("Running main script")
+    run_qrcode_reader()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
