@@ -105,7 +105,7 @@ class JWTManager:
 
 
 def get_req(url: str, *args, **kwargs) -> requests.Response:
-    return requests.get(url)
+    return requests.get(url, cookies={"sessionid": SESSION_ID})
     # return await jwt_manager.make_request(url, "GET", data)
 
 

@@ -22,4 +22,4 @@ QRCODES_PATH = "images/qr_codes/"
 
 IBRAT_CHANNEL = "@ibratdebate"
 
-SESSION_ID = "zqcclcopv4zbmn9a86vg356n8o4rp1q4"
+SESSION_ID = "gqa18zwn8fl26ca6gjuwgopbtetjf2xb"
